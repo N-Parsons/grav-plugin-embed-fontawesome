@@ -1,0 +1,7 @@
+enabled: true
+builtin_css: true
+fail_behaviour: hard
+icon_class: icon
+retain_icon_name: false
+emoji_icons: true
+shortcode_icons: true

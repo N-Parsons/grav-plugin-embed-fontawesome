@@ -1,0 +1,197 @@
+name: Embed Font Awesome
+version: 0.1.0
+description: "Embed Font Awesome icons into your HTML output either as inline SVGs, or referenced images."
+icon: flag
+author:
+  name: Nathan Parsons
+  email: github@tantalum.blue
+  url: https://github.com/n-parsons
+keywords: icons, font awesome, svg, inline, embed, custom icons
+homepage: https://github.com/n-parsons/grav-plugin-embed-fontawesome
+bugs: https://github.com/n-parsons/grav-plugin-embed-fontawesome/issues
+license: MIT
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: Plugin status
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    builtin_css:
+      type: toggle
+      label: Builtin CSS
+      help: Provides a minimalistic stylesheet for formatting icons
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    fail_behaviour:
+      type: toggle
+      label: Failure behaviour
+      default: hard
+      highlight: hard
+      options:
+        "hard": Throw exception
+        "soft": Replace icon
+
+    icon_class:
+      type: text
+      label: Icon class(es)
+      default: icon
+
+    retain_icon_name:
+      type: toggle
+      label: Retain icon name (eg. fa-heart)
+      info: Will be broken if you also load FA CSS/JS
+      highlight: 1
+      default: 0
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    insertion_section:
+      type: section
+      title: Insertion methods for custom icons
+      underline: true
+      text: "These methods replicate the function of 'markdown-fontawesome' and 'shortcode-core', but for custom icons that you upload here. You'll still need those plugins installed if you want to use the same patterns for Font Awesome icons."
+      fields:
+        emoji_icons:
+          type: toggle
+          label: ":emoji: style icons (ie. :icon-...:)"
+          help: "Supplements the 'markdown-fontawesome' plugin"
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        shortcode_icons:
+          type: toggle
+          label: "Shortcode icons (ie. [icon=... /])"
+          help: "Supplements and depends on the 'shortcode-core' plugin"
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+    files_section:
+      type: section
+      title: Icon files
+      text: "Icons can also be uploaded directly to 'user/data/fontawesome/--variant--/', but those won't appear here because of the way that Grav handles file uploads in the Admin Panel."
+      underline: true
+      fields:
+        fieldset-solid:
+          type: fieldset
+          title: Solid (fas/fa)
+          collapsible: true
+          collapsed: true
+          fields:
+            solid:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/solid'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
+        fieldset-regular:
+          type: fieldset
+          title: Regular (far)
+          collapsible: true
+          collapsed: true
+          fields:
+            regular:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/regular'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
+        fieldset-light:
+          type: fieldset
+          title: Light (fal)
+          collapsible: true
+          collapsed: true
+          fields:
+            light:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/light'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
+        fieldset-brand:
+          type: fieldset
+          title: Brands (fab)
+          collapsible: true
+          collapsed: true
+          fields:
+            brands:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/brands'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
+        fieldset-duotone:
+          type: fieldset
+          title: Duotone (fad)
+          collapsible: true
+          collapsed: true
+          fields:
+            duotone:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/duotone'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
+        fieldset-custom:
+          type: fieldset
+          title: Custom (icon)
+          collapsible: true
+          collapsed: true
+          fields:
+            duotone:
+              label: SVGs
+              type: file
+              destination: 'user/data/fontawesome/custom'
+              multiple: true
+              limit: 0
+              filesize: 1
+              accept:
+                - image/*
+
