@@ -2,17 +2,6 @@
 
 The **Embed Font Awesome plugin** for [Grav](http://github.com/getgrav/grav) automatically embeds icons into generated web pages as inline SVGs.
 
-## Conflicts
-
-This plugin conflicts with definition lists in Markdown Extra; if enabled, icons appearing at the start of a line (with no non-whitespace character preceeding them) will be treated as part of a definition list and will be broken. This currently appears to be the only conflict.
-
-If this conflict with Markdown Extra is an issue for you, you can either switch to [Shortcode Core](https://github.com/grav/grav-plugin-shortcode-core), or disable Markdown Extra per-page by adding the following to the page frontmatter:
-
-```
-markdown:
-  extra: false
-```
-
 ## Installation
 
 ### GPM (preferred method)

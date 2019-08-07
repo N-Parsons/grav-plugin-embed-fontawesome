@@ -230,9 +230,5 @@ class EmbedFontAwesomePlugin extends Plugin
 
     return $folder . $icon . ".svg";
   }
-
-  private function getSrcPath($icon, $weight) {
-    return "/user/data/fontawesome/" . $this->getPath($icon, $weight);
-  }
 }
 

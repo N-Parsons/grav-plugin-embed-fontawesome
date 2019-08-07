@@ -1,6 +1,6 @@
 name: Embed Font Awesome
 version: 0.1.0
-description: "Embed Font Awesome icons into your HTML output either as inline SVGs, or referenced images."
+description: "Embed Font Awesome icons into your HTML output as inline SVGs."
 icon: flag
 author:
   name: Nathan Parsons
