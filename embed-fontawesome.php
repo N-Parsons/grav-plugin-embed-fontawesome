@@ -5,7 +5,10 @@ use Grav\Common\Plugin;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 
-use EmbedFontAwesomePlugin\IconNotFoundError;
+// Load the other parts of this plugin
+require_once(__DIR__."/classes/IconNotFoundError.php");
+use Grav\Plugin\EmbedFontAwesomePlugin\IconNotFoundError;
+
 
 class EmbedFontAwesomePlugin extends Plugin
 {
@@ -13,15 +16,14 @@ class EmbedFontAwesomePlugin extends Plugin
   private $iconClass;
   private $retainIconName;
 
+  private $usedIcons = array();
+
   /**
    * Gets the subscribed events and registers them
    * @return array
    */
   public static function getSubscribedEvents()
   {
-    // Load the improved exception type
-    require_once(__DIR__."/classes/IconNotFoundError.php");
-
     return [
       'onPluginsInitialized' => ['onPluginsInitialized', 0]
     ];
@@ -134,18 +136,34 @@ class EmbedFontAwesomePlugin extends Plugin
    */
   public function onOutputGenerated()
   {
-    $page = $this->grav["page"];
-    $content = $this->grav->output;  // HTML
-
-    //$this->grav["debugger"]->addMessage($content);
-
-    if ($page->templateFormat() !== 'html') {
+    // Check that it's an HTML page, abort if not
+    if ($this->grav["page"]->templateFormat() !== 'html') {
       return;
     }
 
-    // Get all matches for Font Awesome icons
-    preg_match_all('/<i (?<preClass>[a-zA-Z0-9 _="-]*)class=(?:"|\')(?<classPreFA>[a-zA-Z0-9 _-]*)(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 _-]*)(?:"|\')(?<postClass>[a-zA-Z0-9 _="-]*)><\/i>/', $content, $matchesRaw);
+    // Get the rendered content (HTML)
+    $content = $this->grav->output;
 
+    // Rewrite the output: embed icons as inline SVGs
+    $this->grav->output = $this->embedIcons($content);
+  }
+
+  /**
+   * Embeds icons into the generated HTML as inline SVGs
+   *
+   * @param string $content Generated HTML to embed icons in
+   * @return string Output HTML with embedded icons
+   */
+  private function embedIcons($content)
+  {
+    // Get all matches for icons
+    preg_match_all(
+      '/<i (?<preClass>[a-zA-Z0-9 _="\'-]*)class=(?:"|\')(?<classPreFA>[a-zA-Z0-9 _-]*)(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 _-]*)(?:"|\')(?<postClass>[a-zA-Z0-9 _="\'-]*)><\/i>/',
+      $content,
+      $matchesRaw
+    );
+
+    // Reconfigure the matches into a more useful structure
     foreach($matchesRaw as $n => $set) {
       foreach($set as $m => $match) {
         $matches[$m][$n] = $match;
@@ -157,56 +175,81 @@ class EmbedFontAwesomePlugin extends Plugin
       $fullMatch = $match[0];
 
       // Get the replacement HTML
-      $replace = $this->embedIcon($match);
+      $replace = $this->getIconHtml($match);
 
-      // Perform replacement
-      $content = str_replace($fullMatch, $replace, $content);
+      // Perform replacement, only replacing the first instance
+      $content = str_replace_once($fullMatch, $replace, $content);
     }
 
-    // Write the new output
-    $this->grav->output = $content;
+    return $content;
   }
 
-  private function embedIcon($match)
+  /**
+   * Takes an array of components from the regex, and returns the HTML for the inline SVG
+   *
+   * @param array $match Associative array of regex matches
+   * @return string HTML for the inline SVG
+   */
+  private function getIconHtml($match)
   {
-    $twig = $this->grav["twig"];
-
-    $this->grav["debugger"]->addMessage($match["iconFA"]);
-
     // Get other attributes
-    $otherProps = $match["preClass"] . " " . $match["postClass"];
-
-    $path = $this->getPath($match["iconFA"], $match["weightFA"]);
+    $attributes = trim($match["preClass"] . " " . $match["postClass"]);
+    if ($attributes) {
+      $attributes = " " . $attributes;
+    }
 
     // Construct the classes
-    $classSpan = join(" ", array($this->iconClass, $match["classPreFA"], $match["classMidFA"], $match["classPostFA"]));
+    $classes = class_merge($this->iconClass, $match["classPreFA"], $match["classMidFA"], $match["classPostFA"]);
     if ($this->retainIconName) {
-      $classSpan .= " ".$match["iconType"].'-'.$match["iconFA"];
+      $classes = array_merge($classes, [$match["iconType"].'-'.$match["iconFA"]]);
+    }
+    $classSpan = implode(" ", $classes);
+
+    // Determine the icon ID
+    $iconId = $match["weightFA"]."_".$match["iconType"]."-".$match["iconFA"];
+
+    if (isset($this->usedIcons[$iconId])) {
+      // Get the viewBox
+      $viewBox = $this->usedIcons[$iconId];
+
+      // Create a twig template
+      $twigTemplate = '<span class="' . $classSpan . '"' . $attributes . '><svg xmlns="http://www.w3.org/2000/svg" '.$viewBox.'><use href="#'.$iconId.'" /></svg></span>';
+
+      // Process the template
+      $inlineSvg = $this->processIconTemplate($twigTemplate);
+
+    } else {
+      // Get the icon path
+      $path = $this->getTemplatePath($match["iconFA"], $match["weightFA"]);
+
+      // Create a twig template
+      $twigTemplate = '<span class="' . $classSpan . '"' . $attributes . '>{% include "' . $path . '" %}</span>';
+
+      // Process the template
+      $inlineSvg = $this->processIconTemplate($twigTemplate);
+
+      // Get the viewBox
+      preg_match('/viewBox="[0-9.]+ [0-9.]+ [0-9.]+ [0-9.]+"/', $inlineSvg, $viewBoxMatches);
+      $viewBox = $viewBoxMatches[0];
+
+      // Store the key details of this icon
+      $this->usedIcons[$iconId] = $viewBox;
+
+      // Insert the ID
+      $inlineSvg = str_replace('<svg ', '<svg id="'.$iconId.'" ', $inlineSvg);
     }
 
-    // Create a twig template and try to process it
-    $twigTemplate = '<span class="' . $classSpan . '"' . $otherProps . '>{% include "' . $path . '" %}</span>';
-
-    try {
-      $replace = $twig->processString($twigTemplate);
-
-    } catch (RuntimeException $e) {
-      $msg = "Icon not found: ".$path.".";
-      if ($this->failBehaviour === "soft") {
-        // Replace the missing icon with a question mark
-        $fallback = file_get_contents(__DIR__."/assets/missing_icon.svg");
-        $replace = '<span class="' . $classSpan . '"' . $otherProps . '>'.$fallback.'</span>';
-        $this->grav["debugger"]->addMessage($msg);
-      } else {
-        // Otherwise, throw a more meaningful error
-        throw new IconNotFoundError($msg, 404, $e);
-      }
-    }
-
-    return $replace;
+    return $inlineSvg;
   }
 
-  private function getPath($icon, $weight) {
+  /**
+   * Gets the template path for a specified icon and variant
+   *
+   * @param string $icon Icon name
+   * @param string $weight Icon weight/variant
+   * @return string Template path for the icon
+   */
+  private function getTemplatePath($icon, $weight) {
     switch ($weight) {
       case "fas":
       case "fa":
@@ -224,11 +267,89 @@ class EmbedFontAwesomePlugin extends Plugin
       case "fad":
         $folder = "duotone/";
         break;
-      default:
+      default:  // "icon"
         $folder = "custom/";
     }
 
     return $folder . $icon . ".svg";
   }
+
+  /**
+   * Safely processes an icon Twig template
+   *
+   * @param string $template Twig template
+   * @return string Inline SVG
+   */
+  private function processIconTemplate($template)
+  {
+    try {
+      $result = $this->grav["twig"]->processString($template);
+
+    } catch (RuntimeException $e) {
+      // Extract the path and create a meaningful message
+      if (preg_match('/\{% include (.+) %\}/', $template, $matches)) {
+        $msg = "Icon not found: ".$matches[1].".";
+
+        // Process the failure as configured
+        if ($this->failBehaviour === "soft") {
+          // Log the failure
+          $this->grav["debugger"]->addMessage($msg);
+
+          // Replace the missing icon with a question mark
+          $fallback = file_get_contents(__DIR__."/assets/missing_icon.svg");
+          $result = str_replace($matches[0], $fallback, $template);
+        } else {
+          // Otherwise, throw a more meaningful error
+          throw new IconNotFoundError($msg, 404, $e);
+        }
+      } else {
+        // There should always be a match, but if not, something has gone wrong...
+        throw $e;
+      }
+    }
+
+    return $result;
+  }
 }
 
+/**
+ * Replaces only the first instance of a string
+ *
+ * @param string $search String to search for and replace
+ * @param string $replace Replacement for the search term
+ * @param string $subject Content to search
+ * @return string $subject with the first instance of $search replaced by $replace
+ */
+function str_replace_once($search, $replace, $subject)
+{
+  $position = strpos($subject, $search);
+  if ($position !== false){
+    return substr_replace($subject, $replace, $position, strlen($search));
+  } else {
+    return $subject;
+  }
+}
+
+
+/**
+ * Merges HTML classes into an array
+ *
+ * @param string ...$classes HTML classes to combine
+ * @return array Array of HTML classes
+ */
+function class_merge(...$classes)
+{
+  $classList = array();
+
+  foreach($classes as $class) {
+    $trimmed = trim($class);
+    if ($trimmed) {
+      $classList = array_merge(
+        explode(" ", $trimmed),
+        $classList
+      );
+    }
+  };
+
+  return $classList;
+}
