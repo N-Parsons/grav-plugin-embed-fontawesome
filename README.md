@@ -19,7 +19,7 @@ The `embed-fontawesome.yaml` file contains the following configuration options:
 - `enabled` (bool): Enables/disables the plugin.
 - `builtin_css` (bool): Enables/disables loading of the builtin CSS.
 - `fail_behaviour` (`hard`/`soft`): Behaviour when icon files are missing (`hard` => throw an exception, `soft` => replace the icon with a question mark).
-- `icon_class` (text): Class(es) to assign to the inline SVG icons.
+- `icon_class` (text): Class(es) to assign to the inline SVG icons (multiple classes should be space-separated).
 - `retain_icon_name` (bool): Whether to retain the icon name as a class of the icon (eg. `fa-heart`).
 - `emoji_icons` (bool): Whether to enable the :emoji:-syntax for custom icons.
 - `shortcode_icons` (bool): Whether to enable the `[icon=.../]` shortcode for custom icons.
