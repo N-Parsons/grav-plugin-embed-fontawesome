@@ -157,28 +157,28 @@ class EmbedFontAwesomePlugin extends Plugin
   private function embedIcons($content)
   {
     // Get all matches for icons
-    preg_match_all(
+    if (preg_match_all(
       '/<i (?<preClass>[a-zA-Z0-9 _="\'-]*)class=(?:"|\')(?<classPreFA>[a-zA-Z0-9 _-]*)(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 _-]*)(?:"|\')(?<postClass>[a-zA-Z0-9 _="\'-]*)><\/i>/',
       $content,
       $matchesRaw
-    );
-
-    // Reconfigure the matches into a more useful structure
-    foreach($matchesRaw as $n => $set) {
-      foreach($set as $m => $match) {
-        $matches[$m][$n] = $match;
+    )) {
+      // Reconfigure the matches into a more useful structure
+      foreach($matchesRaw as $n => $set) {
+        foreach($set as $m => $match) {
+          $matches[$m][$n] = $match;
+        }
       }
-    }
 
-    // Replace the matches
-    foreach($matches as $match) {
-      $fullMatch = $match[0];
+      // Replace the matches
+      foreach($matches as $match) {
+        $fullMatch = $match[0];
 
-      // Get the replacement HTML
-      $replace = $this->getIconHtml($match);
+        // Get the replacement HTML
+        $replace = $this->getIconHtml($match);
 
-      // Perform replacement, only replacing the first instance
-      $content = str_replace_once($fullMatch, $replace, $content);
+        // Perform replacement, only replacing the first instance
+        $content = str_replace_once($fullMatch, $replace, $content);
+      }
     }
 
     return $content;
