@@ -203,7 +203,7 @@ class EmbedFontAwesomePlugin extends Plugin
     if ($this->retainIconName) {
       $classes = array_merge($classes, [$match["iconType"].'-'.$match["iconFA"]]);
     }
-    $classSpan = implode(" ", $classes);
+    $classSpan = implode(" ", array_unique($classes));
 
     // Determine the icon ID
     $iconId = $match["weightFA"]."_".$match["iconType"]."-".$match["iconFA"];
