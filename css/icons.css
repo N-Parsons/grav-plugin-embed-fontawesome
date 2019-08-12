@@ -2,7 +2,6 @@
   /* Inherit properties from text */
   fill: currentColor;
   height: 1em;
-  width: auto;
 
   /* Fix icon alignment */
   vertical-align: middle;
@@ -14,5 +13,4 @@
 /* Fit the SVGs to the container */
 .icon svg {
   height: 100%;
-  width: 100%;
 }
