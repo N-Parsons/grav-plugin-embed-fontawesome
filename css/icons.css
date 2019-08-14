@@ -11,6 +11,8 @@
 }
 
 /* Fit the SVGs to the container */
+/* Over-rides inline attributes of the SVG */
 .icon svg {
   height: 100%;
+  width: auto;
 }
