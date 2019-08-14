@@ -49,7 +49,7 @@ class EmbedFontAwesomePlugin extends Plugin
 
       // Define default events
       $events = array(
-        'onOutputGenerated' => ['onOutputGenerated', 0],
+        'onOutputGenerated' => ['onOutputGenerated', 10], // This needs to run before Advanced Pagecache
         'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
       );
 
