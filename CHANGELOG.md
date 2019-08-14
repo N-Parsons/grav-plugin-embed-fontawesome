@@ -1,3 +1,10 @@
+# v0.1.3
+## 2019-08-14
+
+1. [](#bugfix)
+    * Fixed issues with icon width for custom icons.
+    * Fixed conflict with Advanced Page Cache - caching no longer breaks icons.
+
 # v0.1.2
 ## 2019-08-12
 
