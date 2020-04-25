@@ -1,3 +1,9 @@
+# v0.1.4
+## 2020-04-05
+
+1. [](#improved)
+    * Added compatibility with Tailwind CSS class naming.
+
 # v0.1.3
 ## 2019-08-14
 
