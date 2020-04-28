@@ -1,3 +1,9 @@
+# v0.1.5
+## 2020-04-28
+
+1. [](#bugfix)
+    * Fix placeholder icon sizing for referenced instances.
+
 # v0.1.4
 ## 2020-04-05
 

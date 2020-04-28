@@ -1,5 +1,5 @@
 name: Embed Font Awesome
-version: 0.1.4
+version: 0.1.5
 description: "Embed Font Awesome icons into your HTML output as inline SVGs."
 icon: flag
 author:
@@ -194,4 +194,3 @@ form:
               filesize: 1
               accept:
                 - image/*
-
