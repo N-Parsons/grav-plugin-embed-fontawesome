@@ -1,3 +1,9 @@
+# v0.1.6
+## 2020-05-23
+
+1. [](#bugfix)
+    * Fix issue with 'icon' or 'fa' in the middle of a class name.
+
 # v0.1.5
 ## 2020-04-28
 
