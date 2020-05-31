@@ -157,8 +157,14 @@ class EmbedFontAwesomePlugin extends Plugin
   private function embedIcons($content)
   {
     // Get all matches for icons
+    if (version_compare($ver = PHP_VERSION, $req = "7.3.0", '<')) {
+      $iconRegex = '/<i (?<preClass>[a-zA-Z0-9 _="\'-]*)(?<= )class=(?<quot>"|\')(?<classPreFA>[a-zA-Z0-9 :_-]*)(?<=["\' ])(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<= )(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 :_-]*)\k<quot>(?<postClass>[a-zA-Z0-9 _="\'-]*)><\/i>/';
+    } else {
+      $iconRegex = '/<i (?<preClass>[a-zA-Z0-9 _="\'-]*)(?<= )class=(?<quot>"|\')(?<classPreFA>[a-zA-Z0-9 :_-]*)(?<=( |\k<quot>))(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<= )(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 :_-]*)\k<quot>(?<postClass>[a-zA-Z0-9 _="\'-]*)><\/i>/';
+    }
+
     if (preg_match_all(
-      '/<i (?<preClass>[a-zA-Z0-9 _="\'-]*)(?<= )class=(?<quot>"|\')(?<classPreFA>[a-zA-Z0-9 :_-]*)(?<=( |\k<quot>))(?<weightFA>(?:fa[srlbd]?)|(?:icon)) (?<classMidFA>((?!((fa)|(icon)))[a-zA-Z0-9 _-]*)*)(?<= )(?<iconType>fa|icon)-(?<iconFA>[a-z0-9-]+)(?<classPostFA>[a-zA-Z0-9 :_-]*)\k<quot>(?<postClass>[a-zA-Z0-9 _="\'-]*)><\/i>/',
+      $iconRegex,
       $content,
       $matchesRaw
     )) {
