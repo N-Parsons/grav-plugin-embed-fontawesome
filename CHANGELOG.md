@@ -1,3 +1,9 @@
+# v0.1.7
+## 2020-05-31
+
+1. [](#bugfix)
+    * Fix regex compatibility issue with PHP < 7.3.
+
 # v0.1.6
 ## 2020-05-23
 
