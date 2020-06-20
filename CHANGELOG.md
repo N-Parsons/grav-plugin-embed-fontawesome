@@ -1,3 +1,9 @@
+# v0.1.8
+## 2020-06-20
+
+1. [](#bugfix)
+    * Added support for inline style attributes.
+
 # v0.1.7
 ## 2020-05-31
 
