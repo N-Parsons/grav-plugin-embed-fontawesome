@@ -1,12 +1,12 @@
 <?php
 namespace Grav\Plugin;
 
+use Composer\Autoload\ClassLoader;
 use Grav\Common\Plugin;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 
 // Load the other parts of this plugin
-require_once(__DIR__."/classes/IconNotFoundError.php");
 use Grav\Plugin\EmbedFontAwesomePlugin\IconNotFoundError;
 
 
@@ -25,8 +25,21 @@ class EmbedFontAwesomePlugin extends Plugin
   public static function getSubscribedEvents()
   {
     return [
-      'onPluginsInitialized' => ['onPluginsInitialized', 0]
+      'onPluginsInitialized' => [
+        ['autoload', 100000], // TODO: Remove when plugin requires Grav >=1.7
+        ['onPluginsInitialized', 0],
+      ]
     ];
+  }
+
+  /**
+   * Composer autoload.
+   *is
+   * @return ClassLoader
+   */
+  public function autoload(): ClassLoader
+  {
+      return require __DIR__ . '/vendor/autoload.php';
   }
 
   /**

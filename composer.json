@@ -1,0 +1,29 @@
+{
+  "name": "n-parsons/grav-plugin-embed-fontawesome",
+  "type": "grav-plugin",
+  "description": "Embed Font Awesome icons into your HTML output as inline SVGs.",
+  "keywords": ["plugin", "icons", "font awesome", "svg", "inline", "embed", "custom icons"],
+  "homepage": "https://github.com/N-Parsons/grav-plugin-embed-fontawesome",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nathan Parsons",
+      "email": "github@tantalum.blue",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\EmbedFontawesome\\": "classes/"
+    },
+    "classmap":  ["embed-fontawesome.php"]
+  },
+  "config": {
+    "platform": {
+      "php": "7.1.3"
+    }
+  }
+}
