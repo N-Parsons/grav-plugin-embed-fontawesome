@@ -98,7 +98,7 @@ class EmbedFontAwesomePlugin extends Plugin
    */
   public function onTwigTemplatePaths() {
     // Make the icons available as Twig templates
-    $templatePath = getcwd() . "/user/data/fontawesome";
+    $templatePath = $this->grav["locator"]->getResource("user-data://fontawesome");
 
     // Check that it exists to avoid an error message
     if (file_exists($templatePath)) {
