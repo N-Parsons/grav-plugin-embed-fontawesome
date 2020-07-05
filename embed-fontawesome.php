@@ -157,8 +157,6 @@ class EmbedFontAwesomePlugin extends Plugin
     // Get the rendered content (HTML)
     $content = $this->grav->output;
 
-    $this->grav["debugger"]->addMessage($content);
-
     // Rewrite the output: embed icons as inline SVGs
     $this->grav->output = $this->embedIcons($content);
   }
