@@ -1,5 +1,5 @@
 <?php
-namespace Grav\Plugin\EmbedFontAwesomePlugin;
+namespace Grav\Plugin\EmbedFontawesome;
 
 use Exception;
 
