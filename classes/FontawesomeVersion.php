@@ -6,6 +6,8 @@ use RocketTheme\Toolbox\File\YamlFile;
 
 class FontawesomeVersion
 {
+    const DEFAULT_PATH = Fontawesome::FONTAWESOME_DIR . 'version.yaml';
+
     protected $name;
 
     protected $version;
@@ -16,7 +18,7 @@ class FontawesomeVersion
     {
         $this->name = $content['name'] ?? 'unknown';
         $this->version = $content['version'] ?? 'unknown';
-        $this->path = $path ?? Fontawesome::FONTAWESOME_DIR . 'version.yaml';
+        $this->path = $path ?? self::DEFAULT_PATH;
     }
 
     public function save()
@@ -39,7 +41,7 @@ class FontawesomeVersion
      * @param string $path  file path (yaml)
      * @return FontawesomeVersion|null  version object or null if file not found
      */
-    public static function fromFile(string $path): ?FontawesomeVersion
+    public static function fromFile(string $path = self::DEFAULT_PATH): ?FontawesomeVersion
     {
         if (!file_exists($path)) {
             return null;

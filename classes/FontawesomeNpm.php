@@ -17,11 +17,14 @@ class FontawesomeNpm
     const FONTAWESOME_PRO = '@fortawesome/fontawesome-pro';
 
     /**
+     * Grav configuration.
      * @var Config
      */
     protected $config;
 
     /**
+     * Http client, automatically configured with authentication for
+     * pro access.
      * @var \Symfony\Contracts\HttpClient\HttpClientInterface
      */
     protected $client;
@@ -50,6 +53,11 @@ class FontawesomeNpm
         $this->client = HttpClient::create($options);
     }
 
+    /**
+     * Fetch latest fontawesome information from npm registry.
+     * Uses the pro registry, when access token is configured.
+     * @return array
+     */
     public function getLatest(): array
     {
         $url = empty($this->accessToken)
@@ -59,6 +67,10 @@ class FontawesomeNpm
         return $response->toArray();
     }
 
+    /**
+     * Downloads the latest tarball from npm registry.
+     * @return array
+     */
     public function downloadLatest()
     {
         $latest = $this->getLatest();

@@ -17,7 +17,7 @@ class VersionCommand extends ConsoleCommand
     protected function serve()
     {
         $fontawesome = new Fontawesome();
-        $this->output->writeln($fontawesome->versionInstalled());
-        $this->output->writeln($fontawesome->versionLatest());
+        $this->output->writeln('Latest: ' . $fontawesome->versionLatest());
+        $this->output->writeln('Installed: ' . $fontawesome->versionInstalled());
     }
 }

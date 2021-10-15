@@ -23,7 +23,7 @@ class Fontawesome
 
     public function versionInstalled(): ?FontawesomeVersion
     {
-        return FontawesomeVersion::fromFile(self::FONTAWESOME_DIR . 'version.yaml');
+        return FontawesomeVersion::fromFile();
     }
 
     public function versionLatest(): FontawesomeVersion
@@ -33,10 +33,20 @@ class Fontawesome
 
     public function regenerate(): void
     {
+        // prepare environment, clear file from previous attempts
+        $this->clearTmpDirectory();
+
         $this->backupCustom();
         $this->clear();
         $this->installLatest();
         $this->restoreCustom();
+    }
+
+    protected function clearTmpDirectory(): void
+    {
+        /** @var UniformResourceLocator $locator */
+        $locator = $this->grav->get('locator');
+        Folder::delete($locator->findResource('tmp://') . '/fontawesome');
     }
 
     /**
@@ -44,7 +54,6 @@ class Fontawesome
      */
     protected function backupCustom(): void
     {
-        // TODO: extract source and target
         $source = 'user-data://fontawesome/custom/';
         $target = 'tmp://fontawesome-backup/custom/';
         $this->moveFolderIfExists($source, $target);
@@ -85,8 +94,6 @@ class Fontawesome
         /** @var UniformResourceLocator $locator */
         $locator = $this->grav->get('locator');
 
-        Folder::delete($locator->findResource('tmp://') . '/fontawesome');
-
         // extract needed files from tarball (only svg and license)
         $data = new \PharData($locator->findResource($file->getFilePath()));
         $data->extractTo($locator->findResource('tmp://') . '/fontawesome', [
@@ -97,9 +104,14 @@ class Fontawesome
         // remove tarball in tmp folder
         $file->delete();
 
+        // move icons into fontawesome data dir
         Folder::move('tmp://fontawesome/package/svgs/', self::FONTAWESOME_DIR);
-        // TODO: license move
-        // TODO: adjust fieldset upload fields
+        // move license file into fontawesome data dir
+        $licensePath = $locator->findResource('tmp://fontawesome/package/LICENSE.txt');
+        rename($licensePath, self::FONTAWESOME_DIR . pathinfo($licensePath, PATHINFO_BASENAME));
+
+        // clear tmp environment
+        $this->clearTmpDirectory();
     }
 
     /**
@@ -107,7 +119,6 @@ class Fontawesome
      */
     protected function restoreCustom(): void
     {
-        // TODO: extract source and target
         $source = 'tmp://fontawesome-backup/custom/';
         $target = 'user-data://fontawesome/custom/';
         $this->moveFolderIfExists($source, $target);
