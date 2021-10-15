@@ -99,6 +99,26 @@ form:
       text: "Icons can also be uploaded directly to 'user/data/fontawesome/--variant--/', but those won't appear here because of the way that Grav handles file uploads in the Admin Panel."
       underline: true
       fields:
+
+        generate:
+          type: toggle
+          label: Generate icons
+          help: "Icons will be generated automatically using the latest fontawesome version published on npm. Switch to pro version by providing the pro access token."
+          highlight: 1
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+
+        pro_access_token:
+          type: text
+          label: Pro access token
+          description: Adding a valid access token will automatically enable pro access.
+          placeholder: 5f4bcf38-80fd-11eb-8dcd-0242ac130003
+
+        regenerate:
+          type: embed-fontawesome-regenerate
+
         fieldset-solid:
           type: fieldset
           title: Solid (fas/fa)

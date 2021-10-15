@@ -3,12 +3,11 @@ namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Plugin;
+use Grav\Common\Twig\Twig;
+use Grav\Plugin\EmbedFontawesome\Fontawesome;
+use Grav\Plugin\EmbedFontawesome\IconNotFoundError;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
-
-// Load the other parts of this plugin
-use Grav\Plugin\EmbedFontAwesomePlugin\IconNotFoundError;
-
 
 class EmbedFontAwesomePlugin extends Plugin
 {
@@ -34,12 +33,18 @@ class EmbedFontAwesomePlugin extends Plugin
 
   /**
    * Composer autoload.
-   *is
+   *
    * @return ClassLoader
    */
   public function autoload(): ClassLoader
   {
       return require __DIR__ . '/vendor/autoload.php';
+  }
+
+  public function onTaskFontawesomeGenerate()
+  {
+    $fontawesome = new Fontawesome();
+    $fontawesome->regenerate();
   }
 
   /**
@@ -48,7 +53,14 @@ class EmbedFontAwesomePlugin extends Plugin
   public function onPluginsInitialized()
   {
     // Don't proceed if we are in the admin plugin
-    if ($this->isAdmin()) return;
+    if ($this->isAdmin()) {
+      $this->enable([
+        'onTwigTemplatePaths' => ['onAdminTwigTemplatePaths', 0],
+        'onTwigSiteVariables' => ['onAdminTwigSiteVariables', 0],
+        'onTask.fontawesome.generate' => ['onTaskFontawesomeGenerate', 0],
+      ]);
+      return;
+    }
 
     // Get config
     $config = $this->config['plugins.embed-fontawesome'];
@@ -63,7 +75,7 @@ class EmbedFontAwesomePlugin extends Plugin
       // Define default events
       $events = array(
         'onOutputGenerated' => ['onOutputGenerated', 10], // This needs to run before Advanced Pagecache
-        'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
+        'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
       );
 
       // Enable CSS loading (if enabled)
@@ -81,9 +93,27 @@ class EmbedFontAwesomePlugin extends Plugin
         $events = array_merge($events, ['onShortcodeHandlers' => ['registerIconShortcode', 0]]);
       }
 
+      if ($this->config->get('plugins.embed-fontawesome.generate', false)) {
+        $fontawesome = new Fontawesome();
+        if (is_null($fontawesome->versionInstalled())) {
+          $fontawesome->regenerate();
+        }
+      }
+
       // Enable the relevant events
       $this->enable($events);
     }
+  }
+
+  public function onAdminTwigTemplatePaths(Event $event) {
+    $this->grav['twig']->twig_paths[] = __DIR__ . '/admin/templates';
+  }
+
+  public function onAdminTwigSiteVariables() {
+    /** @var Twig $twig */
+    $twig = $this->grav->get('twig');
+
+    $twig->twig_vars['fontawesome'] = new Fontawesome();
   }
 
   /**

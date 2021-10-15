@@ -1,0 +1,14 @@
+{% extends 'forms/field.html.twig' %}
+
+{% block input %}
+    <div class="form-actions-wrapper">
+        <a href="{{ uri.addNonce(uri.url ~ '/task:fontawesome.generate', 'admin-form', 'admin-nonce') }}" class="button">(Re-)generate icons</a>
+    </div>
+
+    <div class="form-extra-wrapper">
+        <span class="form-description">
+            <strong>Latest:</strong> {{ fontawesome.versionLatest() }}<br>
+            <strong>Installed:</strong> {{ fontawesome.versionInstalled() ?? 'none' }}
+        </span>
+    </div>
+{% endblock %}

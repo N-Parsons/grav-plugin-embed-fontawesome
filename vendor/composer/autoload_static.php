@@ -21,6 +21,7 @@ class ComposerStaticInit8ceadb0042e607f52e9d5e69fefdb472
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Grav\\Plugin\\EmbedFontAwesomePlugin' => __DIR__ . '/../..' . '/embed-fontawesome.php',
     );
 
